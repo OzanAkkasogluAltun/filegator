@@ -13,10 +13,10 @@ return [
     ],
     [
         'route' => [
-            'POST', '/verify2fa', '\Filegator\Controllers\AuthController@verifyCode'
+            'POST', '/verify2fa', '\Filegator\Controllers\AuthController@verify2fa'
         ],
         'roles' => [
-            'guest',
+            'guest','admin','user'
         ],
         'permissions' => [
         ],
