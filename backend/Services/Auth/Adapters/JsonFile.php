@@ -53,7 +53,7 @@ class JsonFile implements Service, AuthInterface
 
         if ($user) {
             foreach ($this->getUsers() as $u) {
-                if ($u['username'] == $user->getUsername() && $hash == $u['password'].$u['permissions'].$u['homedir'].$u['role']) {
+                if ($u['username'] == $user->getUsername() && $hash == $u['password'].$u['permissions'].$u['homedir'].$u['role'].$u['email']) {
                     return $user;
                 }
             }
@@ -70,7 +70,7 @@ class JsonFile implements Service, AuthInterface
             if ($u['username'] == $username && $this->verifyPassword($password, $u['password'])) {
                 $user = $this->mapToUserObject($u);
                 $this->store($user);
-                $this->session->set(self::SESSION_HASH, $u['password'].$u['permissions'].$u['homedir'].$u['role']);
+                $this->session->set(self::SESSION_HASH, $u['password'].$u['permissions'].$u['homedir'].$u['role'].$u['email']);
 
                 return true;
             }
@@ -103,6 +103,7 @@ class JsonFile implements Service, AuthInterface
                 $u['name'] = $user->getName();
                 $u['role'] = $user->getRole();
                 $u['homedir'] = $user->getHomeDir();
+                $u['email'] = $user-> getEmail();
                 $u['permissions'] = $user->getPermissions(true);
 
                 if ($password) {
@@ -133,6 +134,7 @@ class JsonFile implements Service, AuthInterface
             'homedir' => $user->getHomeDir(),
             'permissions' => $user->getPermissions(true),
             'password' => $this->hashPassword($password),
+            'email' => $user-> getEmail(),
         ];
 
         $this->saveUsers($all_users);
@@ -198,6 +200,7 @@ class JsonFile implements Service, AuthInterface
         $new->setRole($user['role']);
         $new->setHomedir($user['homedir']);
         $new->setPermissions($user['permissions'], true);
+        $new->setEmail($user['email']);
 
         return $new;
     }

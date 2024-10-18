@@ -42,6 +42,7 @@ class AdminController
             'username' => 'required',
             'homedir' => 'required',
             'password' => 'required',
+            'email'=>'required'
         ]);
 
         if ($validation->fails()) {
@@ -63,6 +64,7 @@ class AdminController
                 .ltrim($request->input('homedir'), $this->storage->getSeparator())
             );
             $user->setRole($request->input('role', 'user'));
+            $user->setEmail($request->input('email'));
             $user->setPermissions($request->input('permissions'));
             $ret = $this->auth->add($user, $request->input('password'));
         } catch (\Exception $e) {
@@ -85,6 +87,7 @@ class AdminController
             'name' => 'required',
             'username' => 'required',
             'homedir' => 'required',
+            'email' => 'required',
         ]);
 
         if ($validation->fails()) {
@@ -102,6 +105,7 @@ class AdminController
             $user->setUsername($request->input('username'));
             $user->setHomedir($request->input('homedir'));
             $user->setRole($request->input('role', 'user'));
+            $user->setEmail($request->input('email'));
             $user->setPermissions($request->input('permissions'));
 
             return $response->json($this->auth->update($username, $user, $request->input('password', '')));

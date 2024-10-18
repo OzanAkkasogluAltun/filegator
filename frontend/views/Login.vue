@@ -32,6 +32,26 @@
         </form>
       </div>
     </div>
+
+    <!-- 2FA Modal -->
+    <b-modal v-model="is2FAModalActive" :active.sync="is2FAModalActive" has-modal-card>
+      <div class="modal-card">
+        <header class="modal-card-head">
+          <p class="modal-card-title">
+            {{ lang('2FA Verification') }}
+          </p>
+        </header>
+        <section class="modal-card-body">
+          <b-field :label="lang('2FA Code')">
+            <b-input v-model="twoFACode" name="2fa-code" required @input="error = ''" />
+          </b-field>
+        </section>
+        <footer class="modal-card-foot">
+          <button class="button is-primary" @click="verify2FA">Verify</button>
+          <button class="button" @click="is2FAModalActive = false">Cancel</button>
+        </footer>
+      </div>
+    </b-modal>
   </div>
 </template>
 
@@ -44,7 +64,9 @@ export default {
     return {
       username: '',
       password: '',
+      twoFACode: '',
       error: '',
+      is2FAModalActive: false, // 2FA modal kontrolü
     }
   },
   mounted() {
@@ -60,11 +82,9 @@ export default {
         username: this.username,
         password: this.password,
       })
-        .then(user => {
-          this.$store.commit('setUser', user)
-          api.changeDir({
-            to: '/'
-          }).then(() => this.$router.push('/').catch(() => {}))
+        .then(() => {
+          // Başarılı giriş sonrası 2FA penceresini aç
+          this.is2FAModalActive = true
         })
         .catch(error => {
           if (error.response && error.response.data) {
@@ -75,6 +95,24 @@ export default {
           this.password = ''
         })
     },
+    verify2FA() {
+      api.verify2FA({
+        code: this.twoFACode,
+      })
+        .then(() => {
+          // 2FA başarılı olursa kullanıcıyı yönlendir
+          this.$store.commit('setUser', { username: this.username })
+          api.changeDir({ to: '/' }).then(() => this.$router.push('/').catch(() => {}))
+        })
+        .catch(error => {
+          if (error.response && error.response.data) {
+            this.error = this.lang(error.response.data.data)
+          } else {
+            this.handleError(error)
+          }
+          this.twoFACode = '' // Hatalı 2FA kodu girildiğinde sıfırla
+        })
+    }
   }
 }
 </script>

@@ -39,6 +39,12 @@
           {{ permissions(props.row.permissions) }}
         </b-table-column>
 
+        <b-table-column :label="lang('Email')" field="email" sortable>
+          <a @click="editUSer(props.row)">
+            {{ props.row.email }}
+          </a>
+        </b-table-column>
+
         <b-table-column :label="lang('Role')" field="role" sortable>
           {{ lang(capitalize(props.row.role)) }}
         </b-table-column>

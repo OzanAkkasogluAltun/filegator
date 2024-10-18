@@ -173,6 +173,7 @@ const api = {
         homedir: params.homedir,
         password: params.password,
         permissions: params.permissions,
+        email:params.email,
       })
         .then(res => resolve(res.data.data))
         .catch(error => reject(error))
@@ -187,6 +188,7 @@ const api = {
         homedir: params.homedir,
         password: params.password,
         permissions: params.permissions,
+        email:params.email,
       })
         .then(res => resolve(res.data.data))
         .catch(error => reject(error))
@@ -222,6 +224,16 @@ const api = {
         .catch(error => reject(error))
     })
   },
+  verify2FA(params) {
+    return new Promise((resolve, reject) => {
+      axios.post('verify2fa', {
+        code: params.code,
+      })
+        .then(res => resolve(res.data.data))
+        .catch(error => reject(error))
+    })
+  },
+
 }
 
 export default api

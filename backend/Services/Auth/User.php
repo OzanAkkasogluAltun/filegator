@@ -22,6 +22,8 @@ class User implements \JsonSerializable
 
     protected $name = '';
 
+    protected $email = '';
+
     protected $available_roles = ['guest', 'user', 'admin'];
 
     protected $available_permissions = ['read', 'write', 'upload', 'download', 'batchdownload', 'zip', 'chmod'];
@@ -102,6 +104,16 @@ class User implements \JsonSerializable
         return $this->homedir;
     }
 
+    public function setEmail(string $email)
+    {
+        $this->email = $email;
+    }
+
+    public function getEmail():string
+    {
+        return $this->email;
+    }
+
     public function setRole(string $role)
     {
         $this->checkValidRole($role);
@@ -133,6 +145,7 @@ class User implements \JsonSerializable
             'homedir' => $this->getHomeDir(),
             'username' => $this->getUsername(),
             'name' => $this->getName(),
+            'email'=> $this->getEmail(), 
         ];
     }
 

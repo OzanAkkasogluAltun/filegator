@@ -32,6 +32,10 @@
           </b-field>
         </div>
 
+        <b-field :label="lang('Email')" :type="formErrors.email ? 'is-danger' : ''" :message="formErrors.email">
+            <b-input v-model="formFields.email" @keydown.native="formErrors.email = ''" />
+          </b-field>
+ 
         <b-field :label="lang('Homedir')" :type="formErrors.homedir ? 'is-danger' : ''" :message="formErrors.homedir">
           <b-input v-model="formFields.homedir" @focus="selectDir" />
         </b-field>

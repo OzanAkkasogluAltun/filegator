@@ -13,6 +13,16 @@ return [
     ],
     [
         'route' => [
+            'POST', '/verify2fa', '\Filegator\Controllers\AuthController@verifyCode'
+        ],
+        'roles' => [
+            'guest',
+        ],
+        'permissions' => [
+        ],
+    ],
+    [
+        'route' => [
             'POST', '/login', '\Filegator\Controllers\AuthController@login',
         ],
         'roles' => [
@@ -154,7 +164,7 @@ return [
             'POST', '/deleteitems', '\Filegator\Controllers\FileController@deleteItems',
         ],
         'roles' => [
-            'guest', 'user', 'admin',
+            'admin',
         ],
         'permissions' => [
             'read', 'write',
