@@ -86,7 +86,8 @@ class AuthController
         if ($auth->authenticate($username, $password)) {
             // Doğrulama kodu üret ve geçici dosya sistemine yaz
             $code = rand(100000, 999999); // 6 haneli doğrulama kodu
-            $tmpfs->write($username.'_2fa', ['code' => $code, 'time' => time()], true);// Kullanıcının doğrulama kodunu geçici olarak sakla
+            $tmpfs->write($username.'_2fa', ['code' => $code, 'time' => time()], true);
+// Kullanıcının doğrulama kodunu geçici olarak sakla
 
             // Kullanıcıya doğrulama kodunu e-posta ile gönder
             $this->sendVerificationEmail($auth->user()->getEmail(), $code);
@@ -138,21 +139,27 @@ class AuthController
         return $response->json($auth->update($auth->user()->getUsername(), $auth->user(), $request->input('newpassword')));
     }
     public function verify2fa(Request $request, Response $response, TmpfsInterface $tmpfs, AuthInterface $auth)
-    {
-        $username = $auth->user()->getUsername();
-        $input_code = $request->input('code');
-        $stored_code = $tmpfs->read($username.'_2fa');
+{
+    $username = $auth->user()->getUsername();
+    $input_code = $request->input('code');
+    $stored_codes = $tmpfs->read($username.'_2fa');
 
-        if ($input_code === $stored_code) {
-            // Kullanıcı doğrulandı, oturum aç
-            $auth->setUser($auth->user()); // Kullanıcı oturumu aç
-            $tmpfs->remove($username.'_2fa'); // Geçici 2FA kodunu kaldır
-
-            return $response->json(['message' => 'Verification successful', 'redirect' => '/'], 200); // Ana sayfaya yönlendirme
-        } else {
-            $this->logger->log($input_code);
-            $this->logger->log($stored_code);
-            return $response->json('Invalid verification code', 400);
-        }
+    // Assuming stored_codes is a comma-separated string of codes or an array
+    if (is_string($stored_codes)) {
+        $stored_codes = explode(',', $stored_codes); // Convert to an array if needed
     }
+
+    if (in_array($input_code, $stored_codes)) {
+        // Kullanıcı doğrulandı, oturum aç
+        $auth->setUser($auth->user()); // Kullanıcı oturumu aç
+        $tmpfs->remove($username.'_2fa'); // Geçici 2FA kodunu kaldır
+
+        return $response->json(['message' => 'Verification successful', 'redirect' => '/'], 200); // Ana sayfaya yönlendirme
+    } else {
+        $this->logger->log($input_code);
+        $this->logger->log($stored_codes);
+        return $response->json('Invalid verification code', 400);
+    }
+}
+
 }
