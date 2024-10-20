@@ -67,7 +67,10 @@ class LDAP implements Service, AuthInterface
     {
         return $this->session ? $this->session->get(self::SESSION_KEY, null) : null;
     }
-
+    public function checkUser($username, $password): bool
+    {
+        return false;
+    }  
     public function authenticate($username, $password): bool
     {
         // prevent anonymous binding

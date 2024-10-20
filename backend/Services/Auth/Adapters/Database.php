@@ -66,7 +66,10 @@ class Database implements Service, AuthInterface
 
         return null;
     }
-
+    public function checkUser($username, $password): bool
+    {
+        return false;
+    }    
     public function authenticate($username, $password): bool
     {
         $ret = $this->getConnection()

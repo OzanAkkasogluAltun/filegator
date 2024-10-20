@@ -83,10 +83,14 @@ class AuthController
         }
 
         // Kullanıcı adı ve şifre doğruysa
-        if ($auth->authenticate($username, $password)) {
+        if ($auth->checkUser($username, $password)) {
             // Doğrulama kodu üret ve geçici dosya sistemine yaz
             $code = rand(100000, 999999); // 6 haneli doğrulama kodu
-            $tmpfs->write($username.'_2fa', ['code' => $code, 'time' => time()], true);
+            if($tmpfs->exists($username.'_2fa'))//eskiden girilmemiş code varsasil
+            {
+                $tmpfs->remove($username.'_2fa');
+            }
+            $tmpfs->write($username.'_2fa', ['code' => $code], true);
 // Kullanıcının doğrulama kodunu geçici olarak sakla
 
             // Kullanıcıya doğrulama kodunu e-posta ile gönder
@@ -151,15 +155,17 @@ class AuthController
 
     if (in_array($input_code, $stored_codes)) {
         // Kullanıcı doğrulandı, oturum aç
-        $auth->setUser($auth->user()); // Kullanıcı oturumu aç
+        //$auth->setUser($auth->user()); // Kullanıcı oturumu aç
+        $auth->authenticate($username, $input_code);//password içine ne yazıldığının önemi yok
         $tmpfs->remove($username.'_2fa'); // Geçici 2FA kodunu kaldır
 
         return $response->json(['message' => 'Verification successful', 'redirect' => '/'], 200); // Ana sayfaya yönlendirme
     } else {
-        $this->logger->log($input_code);
-        $this->logger->log($stored_codes);
+        $this->logger->log('Input code: ' . $input_code);
+        $this->logger->log('Stored codes: ' . json_encode($stored_codes));
         return $response->json('Invalid verification code', 400);
     }
 }
+
 
 }

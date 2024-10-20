@@ -44,7 +44,10 @@ class WPAuth implements Service, AuthInterface
 
         return $this->getGuest();
     }
-
+    public function checkUser($username, $password): bool
+    {
+        return false;
+    }  
     public function transformUser($wpuser): User
     {
         $user = new User();

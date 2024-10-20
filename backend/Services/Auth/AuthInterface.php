@@ -13,7 +13,7 @@ namespace Filegator\Services\Auth;
 interface AuthInterface
 {
     public function user(): ?User;
-
+    public function checkUser($username, $password): bool;
     public function authenticate($username, $password): bool;
 
     public function forget();
