@@ -85,6 +85,7 @@ class AuthController
         // Kullanıcı adı ve şifre doğruysa
         if ($auth->checkUser($username, $password)) {
             // Doğrulama kodu üret ve geçici dosya sistemine yaz
+            
             $code = rand(100000, 999999); // 6 haneli doğrulama kodu
             if($tmpfs->exists($username.'_2fa'))//eskiden girilmemiş code varsasil
             {
@@ -92,12 +93,12 @@ class AuthController
             }
             $tmpfs->write($username.'_2fa', ['code' => $code], true);
 // Kullanıcının doğrulama kodunu geçici olarak sakla
-
+            $this->logger->log($auth->user()->getEmail());
             // Kullanıcıya doğrulama kodunu e-posta ile gönder
             $this->sendVerificationEmail($auth->user()->getEmail(), $code);
-
+            
             $this->logger->log("Logged in {$username} from IP ".$ip);
-
+            //$auth->forget();
             // Şu anda kullanıcı sadece username ve şifre ile doğrulandı, ama henüz oturum açmadı
             return $response->json('Verification code sent, please verify', 200);
         }
@@ -159,8 +160,9 @@ class AuthController
         $auth->authenticate($username, $input_code);//password içine ne yazıldığının önemi yok
         $tmpfs->remove($username.'_2fa'); // Geçici 2FA kodunu kaldır
 
-        return $response->json(['message' => 'Verification successful', 'redirect' => '/'], 200); // Ana sayfaya yönlendirme
+        return $response->json($auth->user()); // Ana sayfaya yönlendirme
     } else {
+        $auth->forget();//kullanıyı unut
         $this->logger->log('Input code: ' . $input_code);
         $this->logger->log('Stored codes: ' . json_encode($stored_codes));
         return $response->json('Invalid verification code', 400);

@@ -103,6 +103,7 @@ export default {
           // 2FA başarılı olursa kullanıcıyı yönlendir
           this.$store.commit('setUser', { username: this.username })
           api.changeDir({ to: '/' }).then(() => this.$router.push('/').catch(() => {}))
+          window.location.reload()
         })
         .catch(error => {
           if (error.response && error.response.data) {

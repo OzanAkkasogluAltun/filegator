@@ -69,6 +69,9 @@ class JsonFile implements Service, AuthInterface
         foreach($all_users as &$u){
             if ($u['username'] == $username && $this->verifyPassword($password, $u['password']))
             {
+                $user = $this->mapToUserObject($u);
+                $this->store($user);
+                $this->session->set(self::SESSION_HASH, $u['password'].$u['permissions'].$u['homedir'].$u['role'].$u['email']);
                 return true;
             } 
         }

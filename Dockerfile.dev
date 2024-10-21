@@ -1,13 +1,29 @@
 FROM php:8.3-bullseye
 
-RUN apt-get update > /dev/null
-RUN apt-get install -y nodejs npm libzip-dev libgtk2.0-0 libgtk-3-0 libgbm-dev libldap2-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
+# Gerekli paketleri yükleme
+RUN apt-get update > /dev/null \
+    && apt-get install -y nodejs npm curl wget gnupg libzip-dev libgtk2.0-0 libgtk-3-0 libgbm-dev \
+    libldap2-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
 
-RUN docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/
-RUN docker-php-ext-install zip ldap
-RUN docker-php-ext-enable zip ldap
+# LDAP ve ZIP desteği için PHP eklentilerini yükleme
+RUN docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ \
+    && docker-php-ext-install zip ldap \
+    && docker-php-ext-enable zip ldap
 
+# Composer yükleme
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# NVM yükleme ve Node.js 14 kurulumu
+ENV NVM_DIR=/root/.nvm
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.4/install.sh | bash \
+    && . "$NVM_DIR/nvm.sh" \
+    && nvm install 14 \
+    && nvm use 14 \
+    && nvm alias default 14
+
+# Node ve npm'yi PATH'e ekleme
+ENV NODE_PATH=$NVM_DIR/versions/node/v14.*/lib/node_modules
+ENV PATH=$NVM_DIR/versions/node/v14.*/bin:$PATH
 
 WORKDIR "/var/www/filegator/"
 
