@@ -94,6 +94,7 @@ export default {
         username: this.user.username,
         homedir: this.user.homedir,
         password: '',
+        email:this.user.email,
       },
       formErrors: {},
       permissions: {
@@ -200,6 +201,7 @@ export default {
         username: this.formFields.username,
         homedir: this.formFields.homedir,
         password: this.formFields.password,
+        email:this.formFields.email,
         permissions: this.getPermissionsArray(),
       })
         .then(res => {

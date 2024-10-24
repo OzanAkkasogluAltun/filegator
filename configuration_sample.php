@@ -92,9 +92,13 @@ return [
                 'separator' => '/',
                 'config' => [],
                 'adapter' => function () {
-                    return new \League\Flysystem\Adapter\Local(
-                        __DIR__.'/repository'
-                    );
+                  return new \Filegator\Services\Storage\Adapters\FilegatorFtp([
+                      'host' => 'localhost',
+                      'username' => 'user',
+                      'password' => 'password',
+                      'port' => 21,
+                      'timeout' => 10,
+                  ]);
                 },
             ],
         ],
